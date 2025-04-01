@@ -1,5 +1,9 @@
 - name: variables from prompt
   hosts: web
+  vars:
+   COURSE: "Devops with AWS from prompt level"
+   DURATION: "120HRS"
+   TRAINER: "Siva"
   vars_prompt:
   - name: COURSE
     prompt: Please enter the course name
