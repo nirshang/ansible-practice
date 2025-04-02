@@ -2,15 +2,15 @@
   hosts: web
   vars_files:
   - vars.yaml
-  # vars:
-    # COURSE: "Devops with AWS from play level"
-    # DURATION: "120HRS"
-    # TRAINER: "Siva"
+  vars:
+    COURSE: "Devops with AWS from play level"
+    DURATION: "120HRS"
+    TRAINER: "Siva"
   tasks:
   - name: print the course information
-    # vars:
-    #  COURSE: "Devops with AWS from task level"
-    #  DURATION: "120HRS"
-    #  TRAINER: "Siva"
+    vars:
+     COURSE: "Devops with AWS from task level"
+     DURATION: "120HRS"
+     TRAINER: "Siva"
     ansible.builtin.debug:
       msg: "Hi, I am learning {{COURSE}}, duration is {{DURATION}}, TRAINER IS {{TRAINER}}"
