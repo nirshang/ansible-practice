@@ -29,3 +29,12 @@
       numbers: [1,58,7,47,8787,548,87,8,287,878,88,7,878,54,8,58]
     ansible.builtin.debug:
       msg: "minimum number is : {{ numbers | min }}, max number is: {{ numbers | max }}"
+
+  - name: convert map to list
+    vars:  
+     course:
+       name: "ansible"
+       duration: "50HRS"
+       trainer: "Siva"
+    ansible.builtin.debug:
+      msg: "{{ course | dict2items }}"
