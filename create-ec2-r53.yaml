@@ -37,8 +37,8 @@
         overwrite: true
       loop: "{{ ec2_instances.results }}"
 
-     - name: create route 53 public records
-       amazon.aws.route53:
+    - name: create route 53 public records
+      amazon.aws.route53:
          state: present    
          zone: "{{ zone }}"    
          record: "{{ item.item }}.{{ zone }}"    
@@ -47,5 +47,5 @@
          value: "{{ item.instances[0].public_ip_address }}"    
          wait: true    
          overwrite: true    
-       loop: "{{ ec2_instances.results }}"
-       when: ec2_instances.results.item == "fronted"
+      loop: "{{ ec2_instances.results }}"
+      when: ec2_instances.results.item == "fronted"
