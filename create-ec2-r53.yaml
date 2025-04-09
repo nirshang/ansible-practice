@@ -1,38 +1,43 @@
-- name: create ec2 and route 53 records
-  hosts: local
+- name: Create EC2 instances and Route 53 records
+  hosts: localhost
   connection: local
+  gather_facts: false
+
   vars:
     subnet_id: "subnet-09b42672297b465ea"
     sg_id: "sg-09d0d8089aa9b9747"
     ami_id: "ami-09c813fb71547fc4f"
-    zone: devopspractice.online
+    zone: "devopspractice.online"
     instances:
       - mysql
       - backend
       - frontend
+
   tasks:
-    - name: install python dependencies
+    - name: Install Python dependencies
       ansible.builtin.pip:
         name:
-        - boto3
-        - botocore
+          - boto3
+          - botocore
         executable: pip3.9
 
-    - name: "{{ item }}"
+    - name: Launch EC2 instances
       amazon.aws.ec2_instance:
-        name: "{{ item }}-instance"  # Assign a name dynamically
+        name: "{{ item }}-instance"
         vpc_subnet_id: "{{ subnet_id }}"
-        instance_type: "t3.micro"  
+        instance_type: "t3.micro"
         security_group: "{{ sg_id }}"
         image_id: "{{ ami_id }}"
+        wait: true
+        count: 1
       loop: "{{ instances }}"
       register: ec2_instances
 
-    - name: print the output
+    - name: Print EC2 launch output
       ansible.builtin.debug:
-       msg: "{{ ec2_instances }}"
+        msg: "{{ ec2_instances }}"
 
-    - name: create route 53 private records
+    - name: Create Route 53 private records
       amazon.aws.route53:
         state: present
         zone: "{{ zone }}"
@@ -44,17 +49,15 @@
         overwrite: true
       loop: "{{ ec2_instances.results }}"
 
-    - name: create route 53 public records
+    - name: Create Route 53 public record for frontend only
       amazon.aws.route53:
-         state: present    
-         zone: "{{ zone }}"    
-         record: "{{ item.item }}.{{ zone }}"    
-         type: A    
-         ttl: 1    
-         value: "{{ item.instances[0].public_ip_address }}"    
-         wait: true    
-         overwrite: true    
+        state: present    
+        zone: "{{ zone }}"    
+        record: "{{ item.item }}.{{ zone }}"    
+        type: A    
+        ttl: 1    
+        value: "{{ item.instances[0].public_ip_address }}"    
+        wait: true    
+        overwrite: true    
       loop: "{{ ec2_instances.results }}"
       when: item.item == "frontend"
-
-      
